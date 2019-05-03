@@ -1,5 +1,5 @@
 ---
-name: 'my-k8s-node2'
+name: 'node2'
 data-dir: /var/lib/etcd
 initial-advertise-peer-urls: http://192.168.176.4:2380
 listen-peer-urls: http://0.0.0.0:2380

@@ -11,8 +11,8 @@ services:
       - type: bind
         source: /var/lib/etcd
         target: /var/lib/etcd
-    configs:
-      - source: etcd-config
+      - type: bind
+        source: ./etcd-conf.yml
         target: /etc/etcd/etcd-conf.yml
     ports:
       - target: 2379
@@ -23,6 +23,3 @@ services:
         published: 2380
         protocol: tcp
         mode: host
-configs:
-  etcd-config:
-    file: ./etcd-conf.yml
