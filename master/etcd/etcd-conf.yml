@@ -1,0 +1,10 @@
+---
+name: 'my-k8s-master'
+data-dir: /var/lib/etcd
+initial-advertise-peer-urls: http://192.168.176.1:2380
+listen-peer-urls: http://0.0.0.0:2380
+advertise-client-urls: http://192.168.176.1:2379
+listen-client-urls: http://0.0.0.0:2379
+initial-cluster: k8s-master=http://192.168.176.1:2380,node2=http://192.168.176.4:2380,node3=http://192.168.176.3:2380
+initial-cluster-state: new
+initial-cluster-token: yoSwikGhecdeZylmurnasBiHighywilAcantedBonIlgutBy

@@ -1,0 +1,28 @@
+version: "3.7"
+container_name: etcd
+services:
+  etcd:
+    image: quay.io/coreos/etcd:latest
+    command: /usr/local/bin/etcd --config-file /etc/etcd/etcd-conf.yml
+    volumes:
+      - type: bind
+        source: /etc/ssl/certs
+        target: /etc/ssl/certs
+      - type: bind
+        source: /var/lib/etcd
+        target: /var/lib/etcd
+    configs:
+      - source: etcd-config
+        target: /etc/etcd/etcd-conf.yml
+    ports:
+      - target: 2379
+        published: 2379
+        protocol: tcp
+        mode: host
+      - target: 2380
+        published: 2380
+        protocol: tcp
+        mode: host
+configs:
+  etcd-config:
+    file: ./etcd-conf.yml
