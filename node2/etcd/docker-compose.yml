@@ -4,6 +4,7 @@ services:
     image: quay.io/coreos/etcd:latest
     container_name: etcd
     command: /usr/local/bin/etcd --config-file /etc/etcd/etcd-conf.yml
+    restart: unless-stopped
     volumes:
       - type: bind
         source: /etc/ssl/certs
