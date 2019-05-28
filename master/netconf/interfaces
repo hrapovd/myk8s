@@ -1,0 +1,18 @@
+# ifupdown has been replaced by netplan(5) on this system.  See
+# /etc/netplan for current configuration.
+# To re-enable ifupdown on this system, you can run:
+#    sudo apt install ifupdown
+auto lo
+iface lo inet loopback
+
+auto enp1s0
+iface enp1s0 inet manual
+
+auto hap0
+iface hap0 inet static
+  address 192.168.176.1
+  netmask 255.255.255.0
+  gateway 192.168.176.2
+  dns-nameservers 77.88.8.8 8.8.8.8
+  pre-up ip link add hap0 link enp1s0 type macvlan mode bridge
+  post-down ip link del hap0 link enp1s0 type macvlan mode bridge
