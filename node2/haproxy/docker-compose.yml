@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /etc/ssl/certs
+        target: /etc/ssl/certs
+      - type: bind
+        source: /var/lib/etcd
+        target: /var/lib/etcd
+      - type: bind
+        source: ./haproxy.cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      hap-net:
+networks:
+  hap-net:
+    external: true
