@@ -1,5 +1,5 @@
-1. docker run --name hap-kepld -it haproxy:latest bash
-2. apt-get update && apt-get install -y \
+FROM: haproxy:latest
+RUN: apt-get update && apt-get install -y \
    bzip2 libdpkg-perl libfile-fcntllock-perl libgdbm3 libglib2.0-0 libglib2.0-data \
    libicu57 liblocale-gettext-perl libperl5.24 libxml2 netbase perl perl-modules-5.24 \
    pkg-config rename sgml-base shared-mime-info xdg-user-dirs xml-core xz-utils \
@@ -17,12 +17,11 @@
    libassuan0 libatomic1 libcc1-0 libcilkrts5 libfakeroot libgcc-6-dev libgomp1 libisl15 \
    libitm1 libksba8 liblsan0 libmpc3 libmpfr4 libmpx2 libnpth0 libquadmath0 libstdc++-6-dev \
    libtsan0 libubsan0  make patch pinentry-curses curl
-3. cd /root
-4. curl https://www.keepalived.org/software/keepalived-2.0.16.tar.gz -# -o keepalived-2.0.16.tar.gz
-5. tar -xvf keepalived-2.0.16.tar.gz && cd ./keepalived-2.0.16
-6. ./configure --prefix=/usr
-7. make && make install
-8. apt-get purge -y \
+RUN: cd /root && curl https://www.keepalived.org/software/keepalived-2.0.16.tar.gz -# -o keepalived-2.0.16.tar.gz
+RUN: cd /root && tar -xvf keepalived-2.0.16.tar.gz
+RUN: cd /root/keepalived-2.0.16 && ./configure --prefix=/usr
+RUN: cd /root/keepalived-2.0.16 && make && make install
+RUN: apt-get purge -y \
    bzip2 libdpkg-perl libfile-fcntllock-perl libgdbm3 libglib2.0-0 libglib2.0-data \
    libicu57 liblocale-gettext-perl libperl5.24 libxml2 netbase perl perl-modules-5.24 \
    pkg-config rename sgml-base shared-mime-info xdg-user-dirs xml-core xz-utils \
@@ -40,8 +39,6 @@
    libassuan0 libatomic1 libcc1-0 libcilkrts5 libfakeroot libgcc-6-dev libgomp1 libisl15 \
    libitm1 libksba8 liblsan0 libmpc3 libmpfr4 libmpx2 libnpth0 libquadmath0 libstdc++-6-dev \
    libtsan0 libubsan0  make patch pinentry-curses curl
-9. apt-get install -y \
+RUN: apt-get install -y \
    libnl-genl-3-200 libnl-3-200 libmagic1 libip4tc0 libip6tc0 libxtables12
-10. cd / && rm -rf /root/*
-11. exit
-12. docker commit -m "Base haproxy container with compiled keepalived 2.0.16" $(docker ps -a|grep hap-kepld|awk '{print $1}') hap-kepld
+RUN: cd / && rm -rf /root/*
