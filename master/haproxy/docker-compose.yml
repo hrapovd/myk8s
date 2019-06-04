@@ -1,8 +1,12 @@
 version: "3.7"
 services:
   haproxy:
-    image: haproxy:latest
+    image: hap-kepld:latest
     container_name: haproxy
+    command: ["haproxy",
+              "-f",
+              "/usr/local/etc/haproxy/haproxy.cfg"
+             ]
     restart: unless-stopped
     volumes:
       - type: bind
