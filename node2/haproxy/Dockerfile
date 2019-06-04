@@ -1,5 +1,5 @@
-FROM: haproxy:latest
-RUN: apt-get update && apt-get install -y \
+FROM haproxy:latest
+RUN apt-get update && apt-get install -y \
    bzip2 libdpkg-perl libfile-fcntllock-perl libgdbm3 libglib2.0-0 libglib2.0-data \
    libicu57 liblocale-gettext-perl libperl5.24 libxml2 netbase perl perl-modules-5.24 \
    pkg-config rename sgml-base shared-mime-info xdg-user-dirs xml-core xz-utils \
@@ -17,11 +17,11 @@ RUN: apt-get update && apt-get install -y \
    libassuan0 libatomic1 libcc1-0 libcilkrts5 libfakeroot libgcc-6-dev libgomp1 libisl15 \
    libitm1 libksba8 liblsan0 libmpc3 libmpfr4 libmpx2 libnpth0 libquadmath0 libstdc++-6-dev \
    libtsan0 libubsan0  make patch pinentry-curses curl
-RUN: cd /root && curl https://www.keepalived.org/software/keepalived-2.0.16.tar.gz -# -o keepalived-2.0.16.tar.gz
-RUN: cd /root && tar -xvf keepalived-2.0.16.tar.gz
-RUN: cd /root/keepalived-2.0.16 && ./configure --prefix=/usr
-RUN: cd /root/keepalived-2.0.16 && make && make install
-RUN: apt-get purge -y \
+RUN cd /root && curl https://www.keepalived.org/software/keepalived-2.0.16.tar.gz -# -o keepalived-2.0.16.tar.gz
+RUN cd /root && tar -xvf keepalived-2.0.16.tar.gz
+RUN cd /root/keepalived-2.0.16 && ./configure --prefix=/usr
+RUN cd /root/keepalived-2.0.16 && make && make install
+RUN apt-get purge -y \
    bzip2 libdpkg-perl libfile-fcntllock-perl libgdbm3 libglib2.0-0 libglib2.0-data \
    libicu57 liblocale-gettext-perl libperl5.24 libxml2 netbase perl perl-modules-5.24 \
    pkg-config rename sgml-base shared-mime-info xdg-user-dirs xml-core xz-utils \
@@ -39,6 +39,6 @@ RUN: apt-get purge -y \
    libassuan0 libatomic1 libcc1-0 libcilkrts5 libfakeroot libgcc-6-dev libgomp1 libisl15 \
    libitm1 libksba8 liblsan0 libmpc3 libmpfr4 libmpx2 libnpth0 libquadmath0 libstdc++-6-dev \
    libtsan0 libubsan0  make patch pinentry-curses curl
-RUN: apt-get install -y \
+RUN apt-get install -y \
    libnl-genl-3-200 libnl-3-200 libmagic1 libip4tc0 libip6tc0 libxtables12
-RUN: cd / && rm -rf /root/*
+RUN cd / && rm -rf /root/*
