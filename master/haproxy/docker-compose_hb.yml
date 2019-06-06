@@ -1,12 +1,19 @@
 version: "3.7"
 services:
   haproxy:
-    build:
-      context: .
-    image: haproxy:latest
+    image: hap-ha:latest
     container_name: haproxy
     hostname: hap_master
+    sysctls:
+      net.ipv4.ip_nonlocal_bind: 1
+    command: ["haproxy",
+              "-f",
+              "/usr/local/etc/haproxy/haproxy.cfg"
+             ]
     restart: unless-stopped
+    extra_hosts:
+      - "hap_node2:192.168.176.253"
+      - "hap_node3:192.168.176.252"
     volumes:
       - type: bind
         source: /etc/ssl/certs
@@ -17,6 +24,9 @@ services:
       - type: bind
         source: ./haproxy.cfg
         target: /usr/local/etc/haproxy/haproxy.cfg
+      - type: bind
+        source: ./ha.d
+        target: /etc/ha.d
     networks:
       hap-net:
 networks:

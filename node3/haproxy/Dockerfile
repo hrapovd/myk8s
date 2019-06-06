@@ -42,3 +42,4 @@ RUN apt-get purge -y \
 RUN apt-get install -y \
    libnl-genl-3-200 libnl-3-200 libmagic1 libip4tc0 libip6tc0 libxtables12
 RUN cd / && rm -rf /root/*
+RUN echo net.ipv4.ip_nonlocal_bind=1 >> /etc/sysctl.conf
