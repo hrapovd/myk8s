@@ -1,0 +1,5 @@
+1. Запрос ключей и структуры из etcd:
+   ETCDCTL_API=3 etcdctl --endpoints=<etcd_ip>:2379 get / --prefix --keys-only
+
+2. Удаление всех данных из etcd:
+   ETCDCTL_API=3 etcdctl --endpoints=<etcd_ip>:2379 del / --prefix
