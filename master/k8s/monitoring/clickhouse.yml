@@ -30,9 +30,17 @@ spec:
         ports:
         - containerPort: 9116
         volumeMounts:
-        - mountPath: "/etc/clickhouse-server"
+        - mountPath: "/etc/clickhouse-server/config.xml"
           name: main-config
-        
+        - mountPath:  "/etc/clickhouse-server/users.xml"
+          name: users-config
+      volumes:
+      - configMap:
+          name: clickhouse-config
+        name: main-config
+      - configMap:
+          name: clickhouse-users
+        name: users-config
 ---
 apiVersion: v1
 kind: Service
@@ -47,14 +55,6 @@ spec:
   - protocol: TCP
     port: 8123
     targetPort: 8123
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: clickhouse-promus
-  labels:
-    app: clickhouse
-data:
-  config.xml: |
-
-
+  - protocol: TCP
+    port: 9116
+    targetPort: 9116
