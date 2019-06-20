@@ -17,10 +17,12 @@ spec:
     spec:
       containers:
       - name: influxdb
-        image: influxdb:latest-alpine
+        image: influxdb:alpine
         env:
-        - INFLUXDB_DB: prometheus
-        - INFLUXDB_USER: prometheus
+        - name: INFLUXDB_DB
+          value: prometheus
+        - name: INFLUXDB_USER
+          value: prometheus
         livenessProbe:
           failureThreshold: 5
           httpGet:
@@ -35,7 +37,8 @@ spec:
         - containerPort: 8086
         volumeMounts:
         - mountPath: /var/lib/influxdb
-          name: clickhous-dir 
+          name: influxdb-dir 
+      nodeName: k8s-master
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
