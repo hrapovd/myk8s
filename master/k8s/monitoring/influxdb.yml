@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-promus
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      monit: influxdb
+  template:
+    metadata:
+      labels:
+        monit: influxdb
+    spec:
+      containers:
+      - name: influxdb
+        image: influxdb:latest-alpine
+        env:
+        - INFLUXDB_DB: prometheus
+        - INFLUXDB_USER: prometheus
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 8086
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 8086
+        volumeMounts:
+        - mountPath: /var/lib/influxdb
+          name: clickhous-dir 
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      volumes:
+      - hostPath:
+          path: /var/lib/influxdb-promus
+          type: DirectoryOrCreate
+        name: influxdb-dir
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-promus
+  labels:
+    app: influxdb
+spec:
+  selector:
+    monit: influxdb
+  ports:
+  - protocol: TCP
+    port: 8086
+    targetPort: 8086
+    name: http1
