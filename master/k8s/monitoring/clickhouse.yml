@@ -18,29 +18,42 @@ spec:
       containers:
       - name: clickhouse
         image: yandex/clickhouse-server
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 8123
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         ports:
         - containerPort: 8123
         volumeMounts:
         - mountPath: "/etc/clickhouse-server"
-          name: main-config
+          name: clickhouse-config
+        - mountPath: /var/lib/clickhouse
+          name: clickhous-dir 
       - name: clickhouse-exporter
         image: f1yegor/clickhouse-exporter
         args:
-        - "-scrape_uri=http://localhost:8123"
+        - -scrape_uri=http://localhost:8123
         ports:
         - containerPort: 9116
-        volumeMounts:
-        - mountPath: "/etc/clickhouse-server/config.xml"
-          name: main-config
-        - mountPath:  "/etc/clickhouse-server/users.xml"
-          name: users-config
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
       volumes:
       - configMap:
           name: clickhouse-config
-        name: main-config
-      - configMap:
-          name: clickhouse-users
-        name: users-config
+        name: clickhouse-config
+      - hostPath:
+          path: /var/lib/clickhouse-promus
+          type: DirectoryOrCreate
+        name: clickhous-dir
 ---
 apiVersion: v1
 kind: Service
@@ -55,6 +68,8 @@ spec:
   - protocol: TCP
     port: 8123
     targetPort: 8123
+    name: http1
   - protocol: TCP
     port: 9116
     targetPort: 9116
+    name: http2
