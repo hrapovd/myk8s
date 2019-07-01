@@ -1,0 +1,10 @@
+wget https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz
+tar -xvf ./helm-v2.14.1-linux-amd64.tar.gz
+kubectl create -f ./sa-helm.yml
+cd ./linux-amd64
+./helm init --service-account tiller
+sudo cp -v ./helm /usr/bin/
+helm completion bash |sudo tee /etc/bash_completion.d/helm
+cd ../
+rm -f ./linux-amd64/*
+rmdir ./linux-amd64
