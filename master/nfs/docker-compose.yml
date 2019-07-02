@@ -1,11 +1,11 @@
 version: "3.7"
 services:
   nfs-srv:
-    build:
-      context: .
-    image: alpine:nfs
+    image: erichough/nfs-server:latest
     cap_add:
       - SYS_ADMIN
+    security_opt:
+      - apparmor=erichough-nfs
     container_name: alpine_nfs
     hostname: nfs_srv
     restart: unless-stopped
@@ -17,11 +17,35 @@ services:
         source: /nfs
         target: /nfs
     ports:
-      - target: 2049
-        published: 2049
+      - target: 111
+        published: 111
         protocol: tcp
         mode: host
       - target: 111
         published: 111
+        protocol: udp
+        mode: host
+      - target: 2049
+        published: 2049
         protocol: tcp
+        mode: host
+      - target: 2049
+        published: 2049
+        protocol: udp
+        mode: host
+      - target: 32765
+        published: 32765
+        protocol: tcp
+        mode: host
+      - target: 32765
+        published: 32765
+        protocol: udp
+        mode: host
+      - target: 32767
+        published: 32767
+        protocol: tcp
+        mode: host
+      - target: 32767
+        published: 32767
+        protocol: udp
         mode: host
