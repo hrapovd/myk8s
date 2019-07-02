@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  nfs-srv:
+    build:
+      context: .
+    image: alpine:nfs
+    cap_add:
+      - SYS_ADMIN
+    container_name: alpine_nfs
+    hostname: nfs_srv
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./exports
+        target: /etc/exports
+      - type: bind
+        source: /nfs
+        target: /nfs
+    ports:
+      - target: 2049
+        published: 2049
+        protocol: tcp
+        mode: host
+      - target: 111
+        published: 111
+        protocol: tcp
+        mode: host
