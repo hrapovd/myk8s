@@ -1,0 +1,208 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ngx-ingress
+spec: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ingress
+  namespace: ngx-ingress
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ingress-clusterrole
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - pods
+  - secrets
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - "networking.k8s.io"
+  resources:
+  - services
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ingress-role
+  namespace: ngx-ingress
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resourceNames:
+  - ingress-controller-leader-nginx
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ingress-role
+  namespace: default
+rules:
+- apiGroups:
+  - "networking.k8s.io"
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ingress-role-binding
+  namespace: ngx-ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ingress-role
+subjects:
+- kind: ServiceAccount
+  name: ingress
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ingress-role-binding-default
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ingress-role
+subjects:
+- kind: ServiceAccount
+  name: ingress
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ingress-clusterrole-binding
+  namespace: ngx-ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: ingress
+  namespace: ngx-ingress
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-cofniguration
+  namespace: ngx-ingress
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-controller-leader-nginx
+  namespace: ngx-ingress
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ngx-ingress
+  name: ngx-ingress-controller
+  namespace: ngx-ingress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ngx-ingress
+  template:
+    metadata:
+      labels:
+        app: ngx-ingress
+    spec:
+      serviceAccountName: ingress
+      containers:
+        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0
+          name: nginx-ingress-controller
+          args:
+          - /nginx-ingress-controller
+          - --configmap=$(POD_NAMESPACE)/nginx-configuration
+          - --default-backend-service=default/default-http
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443

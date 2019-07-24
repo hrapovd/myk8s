@@ -1,0 +1,108 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+        name: my-app
+spec:
+    rules:
+    - http:
+        paths:
+        - path: /
+          backend:
+            serviceName: my-service
+            servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: ingress
+    namespace: ngx-ingress
+spec:
+    type: NodePort
+    ports:
+        - port: 443
+          targetPort: 443
+          protocol: TCP
+          nodePort: 30443
+          name: https
+    selector:
+      app: ngx-ingress
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: my-service
+spec:
+    selector:
+        app: my-app
+    type: ClusterIP
+    ports:
+        - port: 8080
+          protocol: TCP
+          targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: default-http
+spec:
+    selector:
+        app: default-app
+    type: ClusterIP
+    ports:
+        - port: 8080
+          protocol: TCP
+          targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-app
+  name: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - image: python
+        name: python-http
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - "cd /var/app; python -m http.server 8080"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: app-dir
+          mountPath: /var/app
+      volumes:
+      - name: app-dir
+        configMap:
+          name: my-app-index
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-index
+data:
+  index.html: |+
+    <html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <META HTTP-EQUIV="refresh" CONTENT="60">
+    <body><h1>My app</h1>
+    <div style="font-size:120%">
+      <p>My app test page<br/>Попробуйте подключиться позже.</p>
+    </div>
+    </body></html>
+
